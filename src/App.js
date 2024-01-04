@@ -12,6 +12,7 @@ const App = () => {
   const [searchField, setSearchField] = useState('');
   const [rankSearch, setRankSearch] = useState('');
   const [movies, setMovie] = useState([]);
+
   const onSearchChange = (event) => {
     const searchString = event.target.value.toLowerCase();
       const rankSearchBox = document.querySelector('.rank-search-box');
@@ -35,8 +36,10 @@ const App = () => {
       fetch(url, options)
         .then((response) => response.json())
         .then((movies) => setMovie(movies))
-    },[])
 
+      
+    },[])
+    console.log(movies)
   const onRankChange = (event) => {
       const rankSeach = event.target.value;
       const movieSearchBox = document.querySelector('.movie-search-box')
