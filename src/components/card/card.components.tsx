@@ -1,9 +1,15 @@
 import { Component } from "react";
+import { Movie } from "../../App";
 import './card.styles.css';
 
-class Card extends Component {
-    render(){
-        const {title, id, images, Director, rank, imdbid} = this.props.movie;
+type CardProps = {
+    movie: Movie
+}
+
+// class Card extends Component {
+    const Card = ({movie}: CardProps) => {
+    
+        const {title, id, images, Director, rank, imdbid} = movie;
         
         return (
             <div key={id} className="card-container">
@@ -17,7 +23,5 @@ class Card extends Component {
             </div>
         )
     }
-
-}
 
 export default Card;

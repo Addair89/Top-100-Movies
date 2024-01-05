@@ -1,52 +1,86 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import './App.css';
 import CardList from './components/card-list/card-list.component';
 import SearchBox from './components/search-box/search-box.components';
 import RankSearch from './components/rank-search/rank-search.components';
+import { getData } from './utils/data.utils';
 
-
-
+//title, id, images, Director, rank, imdbid i need all those
+export type Movie = {
+  title: string;
+  id: string;
+  images: string[];
+  Director: string[];
+  rank: number;
+  imdbid: string;
+}
     
 
 const App = () => {
   const [searchField, setSearchField] = useState('');
   const [rankSearch, setRankSearch] = useState('');
-  const [movies, setMovie] = useState([]);
+  const [movies, setMovie] = useState<Movie[]>([]);
 
-  const onSearchChange = (event) => {
+  const onSearchChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const searchString = event.target.value.toLowerCase();
       const rankSearchBox = document.querySelector('.rank-search-box');
-      rankSearchBox.setAttribute('disabled', 'true');
-      setSearchField(searchString);
+      if (rankSearchBox) {
+        rankSearchBox.setAttribute('disabled', 'true');
+        setSearchField(searchString);
+      } else {
+        console.error("Element with class 'rank-search-box' not found");
+      }
       if(searchString === ''){
-        rankSearchBox.removeAttribute('disabled');
+        if(rankSearchBox){
+          rankSearchBox.removeAttribute('disabled');
+        }
       }
   }
 
 
   useEffect(() => {
-    const url = 'https://imdb-top-100-movies1.p.rapidapi.com/';
-    const options = {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': 'bfc24521f2mshca652fa0964c6aap1c960ejsn898ac9cc5dfe',
-        'X-RapidAPI-Host': 'imdb-top-100-movies1.p.rapidapi.com'
-      }
-    };
-      fetch(url, options)
-        .then((response) => response.json())
-        .then((movies) => setMovie(movies))
+    // const url = 'https://imdb-top-100-movies1.p.rapidapi.com/';
+    // const options = {
+    //   method: 'GET',
+    //   headers: {
+    //     'X-RapidAPI-Key': 'bfc24521f2mshca652fa0964c6aap1c960ejsn898ac9cc5dfe',
+    //     'X-RapidAPI-Host': 'imdb-top-100-movies1.p.rapidapi.com'
+    //   }
+    // };
+    //   fetch(url, options)
+    //     .then((response) => response.json())
+    //     .then((movies) => setMovie(movies))
 
-      
+    const fetchMovies = async () => {
+      const url = 'https://imdb-top-100-movies1.p.rapidapi.com/';
+      const options = {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': 'bfc24521f2mshca652fa0964c6aap1c960ejsn898ac9cc5dfe',
+          'X-RapidAPI-Host': 'imdb-top-100-movies1.p.rapidapi.com'
+        }
+      };
+      const movies = await getData<Movie[]>(url, options);
+      setMovie(movies);
+    }
+
+      fetchMovies();
     },[])
     console.log(movies)
-  const onRankChange = (event) => {
+
+  const onRankChange = (event: ChangeEvent<HTMLInputElement>) => {
       const rankSeach = event.target.value;
       const movieSearchBox = document.querySelector('.movie-search-box')
-      movieSearchBox.setAttribute('disabled', 'true');
-      setRankSearch(rankSeach);
+      if(movieSearchBox){
+        movieSearchBox.setAttribute('disabled', 'true');
+        setRankSearch(rankSeach);
+      } else {
+        console.error("Element with class 'movie-search-box' not found");
+      }
       if(rankSeach === ''){
-        movieSearchBox.removeAttribute('disabled');
+        if(movieSearchBox){
+          movieSearchBox.removeAttribute('disabled');
+        }
       }
     }
 
@@ -55,7 +89,7 @@ const App = () => {
       }) 
       
     const filteredRankMovies = movies.filter((el) => {
-      return el.rank == rankSearch
+      return el.rank.toString() == rankSearch
     })  
     const filteredMovies = filteredRankMovies.length > 0 ? filteredRankMovies : filteredSearchMovies;    
 
